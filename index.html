@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chuva de Matrix</title>
+  <style>
+    body {
+      background-color: black;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    .matrix {
+      position: absolute;
+      color: #0F0;
+      font-size: 2vw;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // Configurações
+    var symbol = "abcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()";
+    var symbolCount = 50;
+    var streamCount = 30;
+    var streams = [];
+
+    // Classe para representar um caractere da chuva de Matrix
+    class MatrixSymbol {
+      constructor(x, y, speed) {
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.value;
+        this.switchInterval = Math.floor(Math.random() * 20) + 5;
+      }
+
+      setRandomSymbol() {
+        this.value = symbol[Math.floor(Math.random() * symbol.length)];
+      }
+
+      rain() {
+        this.y = (this.y >= window.innerHeight) ? 0 : this.y += this.speed;
+      }
+    }
+
+    // Inicialização
+    function setup() {
+      var matrixContainer = document.createElement("div");
+      matrixContainer.classList.add("matrix-container");
+      document.body.appendChild(matrixContainer);
+
+      for (var i = 0; i < streamCount; i++) {
+        var x = i * symbolCount;
+        var y = Math.floor(Math.random() * -1000);
+        var speed = Math.floor(Math.random() * 5) + 2;
+
+        var matrixSymbol = new MatrixSymbol(x, y, speed);
+        matrixSymbol.setRandomSymbol();
+        streams.push(matrixSymbol);
+      }
+    }
+
+    // Atualização da animação
+    function draw() {
+      var matrixContainer = document.querySelector(".matrix-container");
+      matrixContainer.innerHTML = "";
+
+      for (var i = 0; i < streams.length; i++) {
+        var matrixSymbol = streams[i];
+
+        var symbolElement = document.createElement("span");
+        symbolElement.classList.add("matrix");
+        symbolElement.innerText = matrixSymbol.value;
+        symbolElement.style.transform = `translate(${matrixSymbol.x}px, ${matrixSymbol.y}px)`;
+
+        matrixContainer.appendChild(symbolElement);
+
+        if (matrixSymbol.switchInterval == 0) {
+          matrixSymbol.setRandomSymbol();
+          matrixSymbol.switchInterval = Math.floor(Math.random() * 20) + 5;
+        }
+
+        matrixSymbol.switchInterval--;
+        matrixSymbol.rain();
+      }
+    }
+
+    // Loop da animação
+    function animate() {
+      draw();
+      requestAnimationFrame(animate);
+    }
+
+    // Iniciar a animação quando a página estiver carregada
+    window.onload = function() {
+      setup();
+      animate();
+    };
+  </script>
+</body>
+</html>
